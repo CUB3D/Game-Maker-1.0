@@ -35,6 +35,7 @@ import call.game.main.Unknown;
 import call.game.utils.AnimationIO;
 import call.gamemaker.ui.DisplayComponent;
 import call.gamemaker.ui.EntityAddMenu;
+import call.gamemaker.ui.KeyBindEditMenu;
 import call.gamemaker.ui.SpriteAddMenu;
 import call.gamemaker.ui.TextTable;
 import call.gamemaker.ui.VarAddMenu;
@@ -56,6 +57,8 @@ public class MakerFrame implements ActionListener
 	private JMenu add;
 
 	private JMenu view;
+	
+	private JMenu engine;
 
 	private JCheckBoxMenuItem prefabs;
 	private JCheckBoxMenuItem animation;
@@ -158,6 +161,17 @@ public class MakerFrame implements ActionListener
 		varible.addActionListener(this);
 		add.add(varible);
 
+		
+		engine = new JMenu("Engine");
+		engine.setEnabled(false);
+		bar.add(engine);
+		
+		JMenuItem editKey = new JMenuItem("Edit KeyBinds");
+		editKey.setActionCommand("EditKey");
+		editKey.addActionListener(this);
+		engine.add(editKey);
+		
+		
 		view = new JMenu("View");
 		bar.add(view);
 
@@ -192,7 +206,7 @@ public class MakerFrame implements ActionListener
 		frame.add(testDispaly);
 
 		frame.setVisible(true);
-
+		
 		while(true)
 			frame.repaint();
 	}
@@ -415,6 +429,11 @@ public class MakerFrame implements ActionListener
 				}catch(IOException e) {e.printStackTrace();}
 			}
 		}
+		
+		
+		if(com.equals("EditKey"))
+			new KeyBindEditMenu(this);
+		
 
 		if(com.equals("addEntity"))
 		{
@@ -509,6 +528,8 @@ public class MakerFrame implements ActionListener
 				publish.setEnabled(true);
 
 				add.setEnabled(true);
+				
+				engine.setEnabled(true);
 			}
 		}
 
@@ -632,8 +653,10 @@ public class MakerFrame implements ActionListener
 			
 			export.setEnabled(true);
 			publish.setEnabled(true);
-
+			
 			add.setEnabled(true);
+			
+			engine.setEnabled(true);
 		}
 	}
 }

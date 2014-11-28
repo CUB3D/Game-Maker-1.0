@@ -57,8 +57,8 @@ public class EntityEditMenu implements ActionListener
 		this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		int x_ = 10;
-		int x = 75;
-		int width_ = 75;
+		int x = 80;
+		int width_ = x;
 		int width = 100;
 		int height = 25;
 

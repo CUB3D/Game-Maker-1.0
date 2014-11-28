@@ -12,6 +12,7 @@ import call.game.image.AnimatedSprite;
 import call.game.image.Sprite;
 import call.game.main.Unknown;
 import call.gamemaker.EntityWrapper;
+import call.gamemaker.KeyBindWrapper;
 import call.gamemaker.MakerFrame;
 import call.gamemaker.SpriteWrapper;
 import call.utils.StringUtils;
@@ -22,6 +23,8 @@ public class DisplayComponent extends Component
 
 	private List<SpriteWrapper> sprites = new ArrayList<SpriteWrapper>();
 	private List<EntityWrapper> entitys = new ArrayList<EntityWrapper>();
+	
+	private List<KeyBindWrapper> keybinds = new ArrayList<KeyBindWrapper>();
 
 	private File workspace;
 	
@@ -161,6 +164,16 @@ public class DisplayComponent extends Component
 		return entitys;
 	}
 
+	public void addKeyBind(KeyBindWrapper kbw)
+	{
+		keybinds.add(kbw);
+	}
+	
+	public List<KeyBindWrapper> getKeybinds()
+	{
+		return keybinds;
+	}
+	
 	public void setWorkspace(File workspace)
 	{
 		this.workspace = workspace;
@@ -190,6 +203,7 @@ public class DisplayComponent extends Component
 	{
 		this.entitys.clear();
 		this.sprites.clear();
+		this.keybinds.clear();
 		this.workspace = null;
 	}
 }
