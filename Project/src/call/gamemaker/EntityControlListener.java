@@ -133,8 +133,6 @@ public class EntityControlListener implements MouseListener, ActionListener
 			{
 				DisplayComponent dc = frame.testDispaly;
 
-				System.out.println(selectedIndex);
-
 				dc.getEntitys().remove(selectedIndex);
 			}
 			

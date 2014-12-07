@@ -223,7 +223,7 @@ public class MakerFrame implements ActionListener
 
 		if(com.equals("export"))
 		{
-			JFileChooser browse = new JFileChooser(new File("."));
+			JFileChooser browse = new JFileChooser(testDispaly.getWorkspace().getParentFile());
 
 			browse.setMultiSelectionEnabled(false);
 			browse.setFileSelectionMode(JFileChooser.FILES_ONLY);

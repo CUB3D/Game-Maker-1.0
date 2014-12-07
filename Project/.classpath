@@ -8,5 +8,6 @@
 			<attribute name="javadoc_location" value="file:/E:/Development/Programing/Java/Workspaces/Workspace API&apos;s/GameAPI_2.0/doc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="E:/Development/Programing/Java/Lib&apos;s/FileAPI.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

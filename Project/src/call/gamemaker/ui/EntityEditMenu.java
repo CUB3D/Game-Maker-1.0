@@ -202,7 +202,7 @@ public class EntityEditMenu implements ActionListener
 				
 				if(!oldImg.delete())
 				{
-					System.out.println("Couldent delete file: deleting on exit");
+					System.out.println("Couldn't delete file: deleting on exit");
 					oldImg.deleteOnExit();
 				}
 				

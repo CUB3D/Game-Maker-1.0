@@ -75,11 +75,7 @@ public class KeyBindEditMenu implements ActionListener
 		String[] s = array.getArray();
 		String[] s1 = new String[s.length - 1];
 		
-		System.out.println(s.length);
-		
 		System.arraycopy(s, 0, s1, 0, s.length - 1);
-		
-		System.out.println(s1.length);
 		
 		list.setListData(s1);
 	}

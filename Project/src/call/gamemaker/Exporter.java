@@ -48,8 +48,6 @@ public class Exporter
 			@Override
 			public void run()
 			{
-				System.out.println("Exporting");
-
 				pause();
 
 				addSprites();
@@ -182,12 +180,9 @@ public class Exporter
 		String name = workspace.getAbsolutePath() + "/";
 
 		int percentPerFile = 100 / scripts.listFiles().length;
-		
-		System.out.println(scripts.list().length);
 
 		for(File ff : scripts.listFiles())
 		{
-			System.out.println("Test: " + ff.getName());
 
 			String cmdbit = "javac.exe ";
 
@@ -370,7 +365,7 @@ public class Exporter
 
 			for(File ff : f.listFiles())
 			{
-				System.out.println(ff.delete());
+				ff.delete();
 				progress.updateProgress(progress.getProgress() + percentPerFile);
 			}
 		}
@@ -404,7 +399,7 @@ public class Exporter
 	{
 		try
 		{
-			Thread.sleep(50);
+			Thread.sleep(1);
 		}catch(Exception e) {e.printStackTrace();}
 	}
 }
