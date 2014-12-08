@@ -1,10 +1,12 @@
-package call.gamemaker;
+package call.gamemaker.tasks;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -16,90 +18,131 @@ import call.game.image.Animation;
 import call.game.utils.AnimationIO;
 import call.gamemaker.ui.DisplayComponent;
 import call.gamemaker.ui.ErrorPopup;
-import call.gamemaker.ui.ProgressDisplay;
 import call.utils.CommandLineUtils;
 
-public class Exporter
+public class ExportTask extends BaseTask
 {
-	private File workspace;
-
 	private ZipOutputStream output;
 
-	private ProgressDisplay progress;
-
-	public Exporter(File output, DisplayComponent display)
+	public ExportTask(File output, DisplayComponent display)
 	{
-		this.workspace = display.getWorkspace();
+		super(display);
 
 		try
 		{
 			this.output = new ZipOutputStream(new FileOutputStream(output));
 		}catch(Exception e) {e.printStackTrace();}
-
-		progress = new ProgressDisplay();
-		progress.setTask("BLA");
-		progress.display();
 	}
 
-	public void export()
+	@Override
+	public List<Task> getTasks()
 	{
-		Runnable r = new Runnable()
+		List<Task> tasks = new ArrayList<Task>();
+
+		tasks.add(new Task()
 		{
 			@Override
-			public void run()
+			public void excecute(BaseTask bt)
 			{
-				pause();
-
 				addSprites();
+			}
+		});
 
-				pause();
-
+		tasks.add(new Task()
+		{
+			@Override
+			public void excecute(BaseTask bt)
+			{
 				addSpriteData();
+			}
+		});
 
-				pause();
-
+		tasks.add(new Task()
+		{
+			@Override
+			public void excecute(BaseTask bt)
+			{
 				clean();
+			}
+		});
 
-				pause();
-
+		tasks.add(new Task()
+		{
+			@Override
+			public void excecute(BaseTask bt)
+			{
 				compileScripts();
+			}
+		});
 
-				pause();
-
+		tasks.add(new Task()
+		{
+			@Override
+			public void excecute(BaseTask bt)
+			{
 				addScripts();
+			}
+		});
 
-				pause();
+		tasks.add(new Task()
+		{
+			@Override
+			public void excecute(BaseTask bt)
+			{
 
 				addEntitys();
+			}
+		});
 
-				pause();
+		tasks.add(new Task()
+		{
+			@Override
+			public void excecute(BaseTask bt)
+			{
 
 				addEntityData();
-
-				pause();
-				
-				addVars();
-				
-				pause();
-
-				progress.setTask("Done");
-				progress.updateProgress(100);
-
-				pause();
-
-				JOptionPane.showMessageDialog(progress.getFrame(), "Done!", "Done", JOptionPane.INFORMATION_MESSAGE);
-
-				progress.dispose();
-
-				try
-				{
-					output.flush();
-					output.close();
-				}catch(Exception e) {e.printStackTrace();}
 			}
-		};
+		});
 
-		new Thread(r).start();
+		tasks.add(new Task()
+		{
+			@Override
+			public void excecute(BaseTask bt)
+			{
+
+				addVars();
+			}
+		});
+		
+		
+		tasks.add(new Task()
+		{
+			@Override
+			public void excecute(BaseTask bt)
+			{
+
+				done();
+			}
+		});
+
+
+		return tasks;
+	}
+	
+	public void done()
+	{
+		progress.setTask("Done");
+		progress.updateProgress(100);
+
+		JOptionPane.showMessageDialog(progress.getFrame(), "Done!", "Done", JOptionPane.INFORMATION_MESSAGE);
+
+		progress.dispose();
+
+		try
+		{
+			output.flush();
+			output.close();
+		}catch(Exception e) {e.printStackTrace();}
 	}
 
 	public void addSprites()
@@ -130,7 +173,7 @@ public class Exporter
 				writeBytes(out);
 
 				progress.updateProgress(progress.getProgress() + precentPerFile);
-				pause();
+
 			}
 		}
 	}
@@ -163,7 +206,7 @@ public class Exporter
 		progress.updateProgress(0);
 
 		File scripts = new File(workspace, "Src/code/game");
-		
+
 		if(scripts.listFiles().length == 0)
 		{
 			progress.updateProgress(100);
@@ -198,13 +241,13 @@ public class Exporter
 
 			Process p = CommandLineUtils.exec(command);
 
-			pause();
+
 
 			progress.updateProgress(progress.getProgress() + percentPerFile);
-			pause();
+
 
 			InputStream error = p.getErrorStream();
-			
+
 			try
 			{
 				ErrorPopup popup = null;
@@ -252,7 +295,7 @@ public class Exporter
 				writeBytes(bytes);
 
 				progress.updateProgress(progress.getProgress() + percentPerFile);
-				pause();
+
 			}
 		}
 		else
@@ -290,7 +333,7 @@ public class Exporter
 				writeBytes(out);
 
 				progress.updateProgress(progress.getProgress() + precentPerFile);
-				pause();
+
 			}
 
 			if(ff.getName().endsWith("zip")) // add zipped animation
@@ -308,7 +351,7 @@ public class Exporter
 				writeBytes(out);
 
 				progress.updateProgress(progress.getProgress() + precentPerFile);
-				pause();
+
 			}
 		}
 	}
@@ -332,23 +375,23 @@ public class Exporter
 
 		progress.updateProgress(100);
 	}
-	
+
 	public void addVars()
 	{
 		progress.setTask("Adding Variables");
 		progress.updateProgress(0);
-		
+
 		File vars = new File(workspace, "Data/Vars.call");
-		
+
 		FileAPI api = new FileAPI(vars);
-		
+
 		byte[] bytes = api.getBytes();
-		
+
 		System.out.println("Data.call: Bytes read: " + bytes.length + ", bytes on disk: " + vars.length());
-		
+
 		putEntry("Data/Vars.call");
 		writeBytes(bytes);
-		
+
 		progress.updateProgress(100);
 	}
 
@@ -392,14 +435,6 @@ public class Exporter
 		try
 		{
 			output.write(bytes);
-		}catch(Exception e) {e.printStackTrace();}
-	}
-
-	public void pause()
-	{
-		try
-		{
-			Thread.sleep(1);
 		}catch(Exception e) {e.printStackTrace();}
 	}
 }

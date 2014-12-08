@@ -33,6 +33,7 @@ import call.game.image.Image;
 import call.game.image.Sprite;
 import call.game.main.Unknown;
 import call.game.utils.AnimationIO;
+import call.gamemaker.tasks.ExportTask;
 import call.gamemaker.ui.DisplayComponent;
 import call.gamemaker.ui.EntityAddMenu;
 import call.gamemaker.ui.KeyBindEditMenu;
@@ -57,7 +58,7 @@ public class MakerFrame implements ActionListener
 	private JMenu add;
 
 	private JMenu view;
-	
+
 	private JMenu engine;
 
 	private JCheckBoxMenuItem prefabs;
@@ -65,7 +66,7 @@ public class MakerFrame implements ActionListener
 	private JCheckBoxMenuItem wireframe;
 
 	public TextTable table;
-	
+
 	public MakerFrame()
 	{
 		try
@@ -80,10 +81,10 @@ public class MakerFrame implements ActionListener
 		frame = new JFrame();
 		frame.setLayout(null);
 		frame.setLocation(0, 0);
-		
+
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		d.height -= 40;
-		
+
 		Unknown.frame_size = Unknown.default_frame_size = d;
 		frame.setMinimumSize(Unknown.frame_size);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -161,17 +162,17 @@ public class MakerFrame implements ActionListener
 		varible.addActionListener(this);
 		add.add(varible);
 
-		
+
 		engine = new JMenu("Engine");
 		engine.setEnabled(false);
 		bar.add(engine);
-		
+
 		JMenuItem editKey = new JMenuItem("Edit KeyBinds");
 		editKey.setActionCommand("EditKey");
 		editKey.addActionListener(this);
 		engine.add(editKey);
-		
-		
+
+
 		view = new JMenu("View");
 		bar.add(view);
 
@@ -195,18 +196,18 @@ public class MakerFrame implements ActionListener
 		testDispaly = new DisplayComponent(this);
 
 		testDispaly.setBounds(0, 0, 800, frame.getHeight());
-		
+
 		table = new TextTable();
-		
+
 		table.setBounds(800, 0, frame.getWidth() - 800, frame.getHeight());
-		
+
 		frame.add(table);
-		
+
 
 		frame.add(testDispaly);
 
 		frame.setVisible(true);
-		
+
 		while(true)
 			frame.repaint();
 	}
@@ -231,166 +232,18 @@ public class MakerFrame implements ActionListener
 			int i = browse.showSaveDialog(frame);
 
 			if(i == JFileChooser.APPROVE_OPTION)
-			{
-				Exporter export = new Exporter(browse.getSelectedFile(), testDispaly);
-				export.export();
-			}
+				new ExportTask(browse.getSelectedFile(), testDispaly).export();
 		}
 
 		if(com.equals("save"))
-		{
-			File sprites = new File(testDispaly.getWorkspace(), "Sprites");
-
-			File output = new File(sprites, "Data.call");
-
-			output.delete();
-
-			try
-			{
-				output.createNewFile();
-			}catch(Exception e) {e.printStackTrace();}
-
-			CFile cf = new CFile(output);
-
-			Element noop = new Element("NOOP");
-
-			noop.addValue(new Value("NOOP", "1"));
-
-			cf.addElement(noop);
-
-			cf.load();
-
-			for(SpriteWrapper sw : testDispaly.getSprites())
-			{
-				Sprite s = sw.getSprite();
-
-				Element e = new Element("Sprite");
-
-				e.addValue(new Value("X", "" + s.getX()));
-				e.addValue(new Value("Y", "" + s.getY()));
-				e.addValue(new Value("Image", sw.getImage()));
-				e.addValue(new Value("Name", sw.getName()));
-				e.addValue(new Value("Prefab", "" + sw.isPrefab()));
-
-				cf.addElement(e);
-			}
-
-			cf.save();
-			
-			
-			
-			
-			File entitys = new File(testDispaly.getWorkspace(), "Entitys");
-
-			output = new File(entitys, "Data.call");
-
-			output.delete();
-
-			try
-			{
-				output.createNewFile();
-			}catch(Exception e) {e.printStackTrace();}
-
-			cf = new CFile(output);
-
-			cf.addElement(noop);
-
-			cf.load();
-
-			for(EntityWrapper sw : testDispaly.getEntitys())
-			{
-				BasicEntity s = sw.getEntity();
-
-				Element e = new Element("Entity");
-
-				e.addValue(new Value("X", "" + s.getX()));
-				e.addValue(new Value("Y", "" + s.getY()));
-				e.addValue(new Value("Image", sw.getImage()));
-				e.addValue(new Value("Name", sw.getName()));
-				e.addValue(new Value("Prefab", "" + sw.isPrefab()));
-				e.addValue(new Value("Animation", "" + sw.isAnimated()));
-				e.addValue(new Value("ID", "" + sw.getID()));
-				e.addValue(new Value("Tag", sw.getTag()));
-
-				cf.addElement(e);
-			}
-
-			cf.save();
-		}
+			save();
 
 		if(com.equals("publish"))
-		{
-			JFileChooser browse = new JFileChooser(new File("."));
-
-			browse.setMultiSelectionEnabled(false);
-			browse.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-			int i = browse.showSaveDialog(frame);
-
-			File out = browse.getSelectedFile();
-
-			if(i == JFileChooser.APPROVE_OPTION)
-			{
-				File exec = new File("libs/GameMaker.jar");
-
-				FileAPI exec_ = new FileAPI(exec);
-
-				byte[] bytes = exec_.getBytes();
-
-				File execOut = new File(out, "GameRunner.jar");
-
-				try
-				{
-					execOut.createNewFile();
-
-					FileOutputStream execfos = new FileOutputStream(execOut);
-					execfos.write(bytes);
-					execfos.flush();
-					execfos.close();
-				}catch(Exception e) {e.printStackTrace();}
-
-				File info = new File(out, "GameInfo.call");
-
-				try
-				{
-					info.createNewFile();
-				}catch(Exception e) {e.printStackTrace();}
-
-				CFile cf = new CFile(info);
-
-				Element gameinfo = new Element("GameInfo");
-
-				gameinfo.addValue(new Value("TickSpeed", "120"));
-
-				cf.addElement(gameinfo);
-
-				Element window = new Element("Window");
-
-				window.addValue(new Value("Width", "512"));
-				window.addValue(new Value("Height", "512"));
-				window.addValue(new Value("Title", "TEST"));
-				window.addValue(new Value("Resizable", "false"));
-
-				cf.addElement(window);
-
-				cf.save();
-
-				File game = new File(out, "test.game");
-
-				try
-				{
-					game.createNewFile();
-				}catch(Exception e) {e.printStackTrace();}
-
-				Exporter exp = new Exporter(game, this.testDispaly);
-				exp.export();
-			}
-		}
+			publish();
 
 		if(com.equals("addSprite"))
-		{
 			new SpriteAddMenu(testDispaly);
-		}
+
 
 		if(com.equals("addCode"))
 		{
@@ -403,9 +256,7 @@ public class MakerFrame implements ActionListener
 				try
 				{
 					script.createNewFile();
-				}catch(Exception e) {}
-
-				//open file with default text editor
+				}catch(Exception e) {e.printStackTrace();}
 
 				BasicWriter writer = new BasicWriter(new FileAPI(script));
 
@@ -429,11 +280,11 @@ public class MakerFrame implements ActionListener
 				}catch(IOException e) {e.printStackTrace();}
 			}
 		}
-		
-		
+
+
 		if(com.equals("EditKey"))
 			new KeyBindEditMenu(this);
-		
+
 
 		if(com.equals("addEntity"))
 		{
@@ -446,92 +297,7 @@ public class MakerFrame implements ActionListener
 		}
 
 		if(com.equals("new"))
-		{
-			testDispaly.cleenup();
-			
-			JFileChooser browse = new JFileChooser(new File("."));
-
-			browse.setMultiSelectionEnabled(false);
-			browse.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-			int i = browse.showOpenDialog(frame);
-
-			if(i == JFileChooser.APPROVE_OPTION)
-			{
-
-				File dir = browse.getSelectedFile();
-
-				//setup structure
-
-				File src = new File(dir, "Src");
-				File code = new File(src, "code");
-				File game = new File(code, "game");
-
-				File sprites = new File(dir, "Sprites");
-				File spriteData = new File(sprites, "Data.call");
-
-				File entitys = new File(dir, "Entitys");
-				File entityData = new File(entitys, "Data.call");
-
-				File data = new File(dir, "Data");
-				File varData = new File(data, "Vars.call");
-
-				try
-				{
-					src.mkdir();
-					code.mkdir();
-					game.mkdir();
-
-					sprites.mkdir();
-					spriteData.createNewFile();
-
-					entitys.mkdir();
-					entityData.createNewFile();
-
-					data.mkdir();
-					varData.createNewFile();
-				}catch(Exception e) {e.printStackTrace();}
-
-				CFile sprite = new CFile(spriteData);
-
-				Element e = new Element("NOOP");
-
-				e.addValue(new Value("NOOP", "1"));
-
-				sprite.addElement(e);
-
-				sprite.save();
-
-				CFile entity = new CFile(entityData);
-
-				Element e1 = new Element("NOOP");
-
-				e1.addValue(new Value("NOOP", "1"));
-
-				entity.addElement(e1);
-
-				entity.save();
-
-				CFile data_ = new CFile(varData);
-
-				Element e2 = new Element("NOOP");
-
-				e2.addValue(new Value("NOOP", "1"));
-
-				data_.addElement(e2);
-
-				data_.save();
-
-				testDispaly.setWorkspace(dir);
-
-				export.setEnabled(true);
-				publish.setEnabled(true);
-
-				add.setEnabled(true);
-				
-				engine.setEnabled(true);
-			}
-		}
+			newProject();
 
 		if(com.equals("open"))
 			openGame();
@@ -547,11 +313,248 @@ public class MakerFrame implements ActionListener
 		testDispaly.setViewWireframe(wireframe.isSelected());
 	}
 	
+	public void save()
+	{
+		File sprites = new File(testDispaly.getWorkspace(), "Sprites");
+
+		File output = new File(sprites, "Data.call");
+
+		output.delete();
+
+		try
+		{
+			output.createNewFile();
+		}catch(Exception e) {e.printStackTrace();}
+
+		CFile cf = new CFile(output);
+
+		Element noop = new Element("NOOP");
+
+		noop.addValue(new Value("NOOP", "1"));
+
+		cf.addElement(noop);
+
+		cf.load();
+
+		for(SpriteWrapper sw : testDispaly.getSprites())
+		{
+			Sprite s = sw.getSprite();
+
+			Element e = new Element("Sprite");
+
+			e.addValue(new Value("X", "" + s.getX()));
+			e.addValue(new Value("Y", "" + s.getY()));
+			e.addValue(new Value("Image", sw.getImage()));
+			e.addValue(new Value("Name", sw.getName()));
+			e.addValue(new Value("Prefab", "" + sw.isPrefab()));
+
+			cf.addElement(e);
+		}
+
+		cf.save();
+
+
+
+
+		File entitys = new File(testDispaly.getWorkspace(), "Entitys");
+
+		output = new File(entitys, "Data.call");
+
+		output.delete();
+
+		try
+		{
+			output.createNewFile();
+		}catch(Exception e) {e.printStackTrace();}
+
+		cf = new CFile(output);
+
+		cf.addElement(noop);
+
+		cf.load();
+
+		for(EntityWrapper sw : testDispaly.getEntitys())
+		{
+			BasicEntity s = sw.getEntity();
+
+			Element e = new Element("Entity");
+
+			e.addValue(new Value("X", "" + s.getX()));
+			e.addValue(new Value("Y", "" + s.getY()));
+			e.addValue(new Value("Image", sw.getImage()));
+			e.addValue(new Value("Name", sw.getName()));
+			e.addValue(new Value("Prefab", "" + sw.isPrefab()));
+			e.addValue(new Value("Animation", "" + sw.isAnimated()));
+			e.addValue(new Value("ID", "" + sw.getID()));
+			e.addValue(new Value("Tag", sw.getTag()));
+
+			cf.addElement(e);
+		}
+
+		cf.save();
+	}
 	
-	public void openGame()
+	public void newProject()
 	{
 		testDispaly.cleenup();
-		
+
+		JFileChooser browse = new JFileChooser(new File("."));
+
+		browse.setMultiSelectionEnabled(false);
+		browse.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		int i = browse.showOpenDialog(frame);
+
+		if(i == JFileChooser.APPROVE_OPTION)
+		{
+
+			File dir = browse.getSelectedFile();
+
+			//setup structure
+
+			File src = new File(dir, "Src");
+			File code = new File(src, "code");
+			File game = new File(code, "game");
+
+			File sprites = new File(dir, "Sprites");
+			File spriteData = new File(sprites, "Data.call");
+
+			File entitys = new File(dir, "Entitys");
+			File entityData = new File(entitys, "Data.call");
+
+			File data = new File(dir, "Data");
+			File varData = new File(data, "Vars.call");
+
+			try
+			{
+				src.mkdir();
+				code.mkdir();
+				game.mkdir();
+
+				sprites.mkdir();
+				spriteData.createNewFile();
+
+				entitys.mkdir();
+				entityData.createNewFile();
+
+				data.mkdir();
+				varData.createNewFile();
+			}catch(Exception e) {e.printStackTrace();}
+
+			CFile sprite = new CFile(spriteData);
+
+			Element e = new Element("NOOP");
+
+			e.addValue(new Value("NOOP", "1"));
+
+			sprite.addElement(e);
+
+			sprite.save();
+
+			CFile entity = new CFile(entityData);
+
+			Element e1 = new Element("NOOP");
+
+			e1.addValue(new Value("NOOP", "1"));
+
+			entity.addElement(e1);
+
+			entity.save();
+
+			CFile data_ = new CFile(varData);
+
+			Element e2 = new Element("NOOP");
+
+			e2.addValue(new Value("NOOP", "1"));
+
+			data_.addElement(e2);
+
+			data_.save();
+
+			testDispaly.setWorkspace(dir);
+
+			export.setEnabled(true);
+			publish.setEnabled(true);
+
+			add.setEnabled(true);
+
+			engine.setEnabled(true);
+		}
+	}
+
+	public void publish()
+	{
+		JFileChooser browse = new JFileChooser(new File("."));
+
+		browse.setMultiSelectionEnabled(false);
+		browse.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		int i = browse.showSaveDialog(frame);
+
+		File out = browse.getSelectedFile();
+
+		if(i == JFileChooser.APPROVE_OPTION)
+		{
+			File exec = new File("libs/GameMaker.jar");
+
+			FileAPI exec_ = new FileAPI(exec);
+
+			byte[] bytes = exec_.getBytes();
+
+			File execOut = new File(out, "GameRunner.jar");
+
+			try
+			{
+				execOut.createNewFile();
+
+				FileOutputStream execfos = new FileOutputStream(execOut);
+				execfos.write(bytes);
+				execfos.flush();
+				execfos.close();
+			}catch(Exception e) {e.printStackTrace();}
+
+			File info = new File(out, "GameInfo.call");
+
+			try
+			{
+				info.createNewFile();
+			}catch(Exception e) {e.printStackTrace();}
+
+			CFile cf = new CFile(info);
+
+			Element gameinfo = new Element("GameInfo");
+
+			gameinfo.addValue(new Value("TickSpeed", "120"));
+
+			cf.addElement(gameinfo);
+
+			Element window = new Element("Window");
+
+			window.addValue(new Value("Width", "512"));
+			window.addValue(new Value("Height", "512"));
+			window.addValue(new Value("Title", "TEST"));
+			window.addValue(new Value("Resizable", "false"));
+
+			cf.addElement(window);
+
+			cf.save();
+
+			File game = new File(out, "test.game");
+
+			try
+			{
+				game.createNewFile();
+			}catch(Exception e) {e.printStackTrace();}
+
+			ExportTask exp = new ExportTask(game, this.testDispaly);
+			exp.export();
+		}
+	}
+
+	public void openGame() // TODO: REFACTOR
+	{
+		testDispaly.cleenup();
+
 		JFileChooser browse = new JFileChooser(new File("."));
 
 		browse.setMultiSelectionEnabled(false);
@@ -611,10 +614,10 @@ public class MakerFrame implements ActionListener
 					int y = e.getValue("Y").getInt(0);
 					boolean animation = e.getValue("Animation").getBoolean(false);
 					int id = e.getValue("ID").getInt(0);
-					
+
 					String imageS = e.getValue("Image").getValue();
 					String name = e.getValue("Name").getValue();
-					
+
 					String tag = e.getValue("Tag").getValue();
 
 					Sprite s = null;
@@ -649,13 +652,13 @@ public class MakerFrame implements ActionListener
 			}
 
 			// add scripts to text table
-			
-			
+
+
 			export.setEnabled(true);
 			publish.setEnabled(true);
-			
+
 			add.setEnabled(true);
-			
+
 			engine.setEnabled(true);
 		}
 	}

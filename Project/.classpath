@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="E:/Development/Programing/Java/Lib&apos;s/Utils.jar"/>
 	<classpathentry kind="lib" path="E:/Development/Programing/Java/Lib&apos;s/Old unknown versions/Unknown 2.0.jar" sourcepath="E:/Development/Programing/Java/Workspaces/Workspace API&apos;s/GameAPI_2.0/src">
 		<attributes>
@@ -9,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="E:/Development/Programing/Java/Lib&apos;s/FileAPI.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_25"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
