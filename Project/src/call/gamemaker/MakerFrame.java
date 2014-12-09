@@ -3,8 +3,6 @@ package call.gamemaker;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,7 +39,7 @@ import call.gamemaker.ui.SpriteAddMenu;
 import call.gamemaker.ui.TextTable;
 import call.gamemaker.ui.VarAddMenu;
 
-public class MakerFrame implements ActionListener
+public class MakerFrame
 {
 	public JFrame frame;
 	public DisplayComponent testDispaly;
@@ -102,39 +100,33 @@ public class MakerFrame implements ActionListener
 		bar.add(file);
 
 		ne = new JMenuItem("New");
-		ne.setActionCommand("new");
-		ne.addActionListener(this);
+		ne.addActionListener(e -> newProject());
 		file.add(ne);
 
 		open = new JMenuItem("Open");
-		open.setActionCommand("open");
-		open.addActionListener(this);
+		open.addActionListener(e -> openGame());
 		file.add(open);
 
 		save = new JMenuItem("Save");
-		save.setActionCommand("save");
-		save.addActionListener(this);
+		save.addActionListener(e -> save());
 		file.add(save);
 
 		file.addSeparator();
 
 		export = new JMenuItem("Export");
-		export.setActionCommand("export");
-		export.addActionListener(this);
+		export.addActionListener(e -> export());
 		export.setEnabled(false);
 		file.add(export);
 
 		publish = new JMenuItem("Publish");
-		publish.setActionCommand("publish");
-		publish.addActionListener(this);
+		publish.addActionListener(e -> publish());
 		publish.setEnabled(false);
 		file.add(publish);
 
 		file.addSeparator();
 
 		exit = new JMenuItem("Quit");
-		exit.setActionCommand("exit");
-		exit.addActionListener(this);
+		exit.addActionListener(e -> System.exit(0));
 		file.add(exit);
 
 
@@ -143,23 +135,19 @@ public class MakerFrame implements ActionListener
 		bar.add(add);
 
 		JMenuItem sprite = new JMenuItem("Sprite");
-		sprite.setActionCommand("addSprite");
-		sprite.addActionListener(this);
+		sprite.addActionListener(e -> new SpriteAddMenu(testDispaly));
 		add.add(sprite);
 
 		JMenuItem code = new JMenuItem("Script");
-		code.setActionCommand("addCode");
-		code.addActionListener(this);
+		code.addActionListener(e -> addcode());
 		add.add(code);
 
 		JMenuItem entity = new JMenuItem("Entity");
-		entity.setActionCommand("addEntity");
-		entity.addActionListener(this);
+		entity.addActionListener(e -> new EntityAddMenu(this.testDispaly));
 		add.add(entity);
 
 		JMenuItem varible = new JMenuItem("Global var");
-		varible.setActionCommand("addVar");
-		varible.addActionListener(this);
+		varible.addActionListener(e -> new VarAddMenu(this.testDispaly));
 		add.add(varible);
 
 
@@ -168,8 +156,7 @@ public class MakerFrame implements ActionListener
 		bar.add(engine);
 
 		JMenuItem editKey = new JMenuItem("Edit KeyBinds");
-		editKey.setActionCommand("EditKey");
-		editKey.addActionListener(this);
+		editKey.addActionListener(e -> new KeyBindEditMenu(this));
 		engine.add(editKey);
 
 
@@ -178,17 +165,14 @@ public class MakerFrame implements ActionListener
 
 		prefabs = new JCheckBoxMenuItem("Prefabs");
 		prefabs.setSelected(true);
-		prefabs.addActionListener(this);
 		view.add(prefabs);
 
 		animation = new JCheckBoxMenuItem("Animations");
 		animation.setSelected(true);
-		animation.addActionListener(this);
 		view.add(animation);
 
 		wireframe = new JCheckBoxMenuItem("Wire frame");
 		wireframe.setSelected(true);
-		wireframe.addActionListener(this);
 		view.add(wireframe);
 
 		frame.setJMenuBar(bar);
@@ -209,110 +193,69 @@ public class MakerFrame implements ActionListener
 		frame.setVisible(true);
 
 		while(true)
+		{
 			frame.repaint();
+			
+			update();
+		}
 	}
-
-	public static void main(String[] args)
+	
+	public void update()
 	{
-		new MakerFrame();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent av)
-	{
-		String com = av.getActionCommand();
-
-		if(com.equals("export"))
-		{
-			JFileChooser browse = new JFileChooser(testDispaly.getWorkspace().getParentFile());
-
-			browse.setMultiSelectionEnabled(false);
-			browse.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-			int i = browse.showSaveDialog(frame);
-
-			if(i == JFileChooser.APPROVE_OPTION)
-				new ExportTask(browse.getSelectedFile(), testDispaly).export();
-		}
-
-		if(com.equals("save"))
-			save();
-
-		if(com.equals("publish"))
-			publish();
-
-		if(com.equals("addSprite"))
-			new SpriteAddMenu(testDispaly);
-
-
-		if(com.equals("addCode"))
-		{
-			String name = JOptionPane.showInputDialog(frame, "Script Name", "Add Script", JOptionPane.PLAIN_MESSAGE);
-
-			if(name != null && !name.isEmpty())
-			{
-				File script = new File(testDispaly.getWorkspace(), "Src/code/game/" + name + ".java");
-
-				try
-				{
-					script.createNewFile();
-				}catch(Exception e) {e.printStackTrace();}
-
-				BasicWriter writer = new BasicWriter(new FileAPI(script));
-
-				writer.writeln("package code.game;");
-				writer.writeln("");
-				writer.writeln("import call.gamerunner.main.*;");
-				writer.writeln("import call.game.input.keyboard.*;");
-				writer.writeln("import call.game.input.mouse.*;");
-				writer.writeln("import call.game.input.*;");
-				writer.writeln("");
-				writer.writeln("public class " + name);
-				writer.writeln("{");
-				writer.writeln("");
-				writer.writeln("}");
-
-				writer.finish();
-
-				try
-				{
-					Desktop.getDesktop().open(script);
-				}catch(IOException e) {e.printStackTrace();}
-			}
-		}
-
-
-		if(com.equals("EditKey"))
-			new KeyBindEditMenu(this);
-
-
-		if(com.equals("addEntity"))
-		{
-			new EntityAddMenu(this.testDispaly);
-		}
-
-		if(com.equals("addVar"))
-		{
-			new VarAddMenu(this.testDispaly);
-		}
-
-		if(com.equals("new"))
-			newProject();
-
-		if(com.equals("open"))
-			openGame();
-
-		if(com.equals("exit"))
-			System.exit(0);
-
-
-		// set checkbox values
-
 		testDispaly.setViewPrefabs(prefabs.isSelected());
 		testDispaly.setViewAnimations(animation.isSelected());
 		testDispaly.setViewWireframe(wireframe.isSelected());
 	}
 	
+	public void addcode()
+	{
+		String name = JOptionPane.showInputDialog(frame, "Script Name", "Add Script", JOptionPane.PLAIN_MESSAGE);
+
+		if(name != null && !name.isEmpty())
+		{
+			File script = new File(testDispaly.getWorkspace(), "Src/code/game/" + name + ".java");
+
+			try
+			{
+				script.createNewFile();
+			}catch(Exception e) {e.printStackTrace();}
+
+			BasicWriter writer = new BasicWriter(new FileAPI(script));
+
+			writer.writeln("package code.game;");
+			writer.writeln("");
+			writer.writeln("import call.gamerunner.main.*;");
+			writer.writeln("import call.game.input.keyboard.*;");
+			writer.writeln("import call.game.input.mouse.*;");
+			writer.writeln("import call.game.input.*;");
+			writer.writeln("");
+			writer.writeln("public class " + name);
+			writer.writeln("{");
+			writer.writeln("");
+			writer.writeln("}");
+
+			writer.finish();
+
+			try
+			{
+				Desktop.getDesktop().open(script);
+			}catch(IOException e) {e.printStackTrace();}
+		}
+	}
+
+	public void export()
+	{
+		JFileChooser browse = new JFileChooser(testDispaly.getWorkspace().getParentFile());
+
+		browse.setMultiSelectionEnabled(false);
+		browse.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+		int i = browse.showSaveDialog(frame);
+
+		if(i == JFileChooser.APPROVE_OPTION)
+			new ExportTask(browse.getSelectedFile(), testDispaly).export();
+	}
+
 	public void save()
 	{
 		File sprites = new File(testDispaly.getWorkspace(), "Sprites");
@@ -393,7 +336,7 @@ public class MakerFrame implements ActionListener
 
 		cf.save();
 	}
-	
+
 	public void newProject()
 	{
 		testDispaly.cleenup();
@@ -661,5 +604,11 @@ public class MakerFrame implements ActionListener
 
 			engine.setEnabled(true);
 		}
+	}
+	
+	
+	public static void main(String[] args)
+	{
+		new MakerFrame();
 	}
 }

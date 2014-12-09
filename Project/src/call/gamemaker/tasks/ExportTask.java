@@ -39,91 +39,15 @@ public class ExportTask extends BaseTask
 	{
 		List<Task> tasks = new ArrayList<Task>();
 
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-				addSprites();
-			}
-		});
-
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-				addSpriteData();
-			}
-		});
-
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-				clean();
-			}
-		});
-
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-				compileScripts();
-			}
-		});
-
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-				addScripts();
-			}
-		});
-
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-
-				addEntitys();
-			}
-		});
-
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-
-				addEntityData();
-			}
-		});
-
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-
-				addVars();
-			}
-		});
-		
-		
-		tasks.add(new Task()
-		{
-			@Override
-			public void excecute(BaseTask bt)
-			{
-
-				done();
-			}
-		});
+		tasks.add(bt -> addSprites());
+		tasks.add(bt -> addSpriteData());
+		tasks.add(bt -> clean());
+		tasks.add(bt -> compileScripts());
+		tasks.add(bt -> addScripts());
+		tasks.add(bt -> addEntitys());
+		tasks.add(bt -> addEntityData());
+		tasks.add(bt -> addVars());
+		tasks.add(bt -> done());
 
 
 		return tasks;
