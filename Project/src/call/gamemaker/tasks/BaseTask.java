@@ -11,25 +11,29 @@ public class BaseTask
 	protected File workspace;
 
 	protected ProgressDisplay progress;
+	
+	protected DisplayComponent display;
 
 	protected int curTask = 0;
 
 	public BaseTask(DisplayComponent component)
 	{
+		this.display = component;
+		
 		this.workspace = component.getWorkspace();
 
 		progress = new ProgressDisplay();
-		progress.setTask("BLA");
+		progress.setTask("");
 		progress.display();
 	}
 
-	public void export()
+	public void excecute()
 	{
 		BaseTaskRunnable btr = new BaseTaskRunnable(this);
 		
 		new Thread(btr).start();
 	}
-
+	
 	public List<Task> getTasks()
 	{
 		return null;

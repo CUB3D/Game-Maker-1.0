@@ -11,7 +11,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
 
 import call.file.api.FileAPI;
 import call.game.image.Animation;
@@ -55,13 +54,6 @@ public class ExportTask extends BaseTask
 	
 	public void done()
 	{
-		progress.setTask("Done");
-		progress.updateProgress(100);
-
-		JOptionPane.showMessageDialog(progress.getFrame(), "Done!", "Done", JOptionPane.INFORMATION_MESSAGE);
-
-		progress.dispose();
-
 		try
 		{
 			output.flush();
@@ -72,7 +64,7 @@ public class ExportTask extends BaseTask
 	public void addSprites()
 	{
 		progress.setTask("Adding sprites");
-		progress.updateProgress(0);
+		progress.setProgress(0);
 
 		putEntry("Sprites/");	
 
@@ -96,7 +88,7 @@ public class ExportTask extends BaseTask
 
 				writeBytes(out);
 
-				progress.updateProgress(progress.getProgress() + precentPerFile);
+				progress.setProgress(progress.getProgress() + precentPerFile);
 
 			}
 		}
@@ -105,7 +97,7 @@ public class ExportTask extends BaseTask
 	public void addSpriteData()
 	{
 		progress.setTask("Adding sprite data");
-		progress.updateProgress(0);
+		progress.setProgress(0);
 
 		File fil = new File(workspace, "Sprites/Data.call");
 
@@ -119,7 +111,7 @@ public class ExportTask extends BaseTask
 
 		writeBytes(bytes);
 
-		progress.updateProgress(100);
+		progress.setProgress(100);
 	}
 
 
@@ -127,13 +119,13 @@ public class ExportTask extends BaseTask
 	public void compileScripts()
 	{
 		progress.setTask("Compiling scripts");
-		progress.updateProgress(0);
+		progress.setProgress(0);
 
 		File scripts = new File(workspace, "Src/code/game");
 
 		if(scripts.listFiles().length == 0)
 		{
-			progress.updateProgress(100);
+			progress.setProgress(100);
 			return;
 		}
 
@@ -167,7 +159,7 @@ public class ExportTask extends BaseTask
 
 
 
-			progress.updateProgress(progress.getProgress() + percentPerFile);
+			progress.setProgress(progress.getProgress() + percentPerFile);
 
 
 			InputStream error = p.getErrorStream();
@@ -194,7 +186,7 @@ public class ExportTask extends BaseTask
 	public void addScripts()
 	{
 		progress.setTask("Adding Scripts");
-		progress.updateProgress(0);
+		progress.setProgress(0);
 
 		putEntry("code/");
 		putEntry("code/game/");
@@ -218,21 +210,20 @@ public class ExportTask extends BaseTask
 				putEntry("code/game/" + claz.getName());
 				writeBytes(bytes);
 
-				progress.updateProgress(progress.getProgress() + percentPerFile);
-
+				progress.setProgress(progress.getProgress() + percentPerFile);
 			}
 		}
 		else
 		{
 			System.out.println("No Classes exist if scripts have been added check to make surce javac is on your path and you're on windows or linux");
-			progress.updateProgress(100);
+			progress.setProgress(100);
 		}
 	}
 
 	public void addEntitys()
 	{
 		progress.setTask("Adding entitys");
-		progress.updateProgress(0);
+		progress.setProgress(0);
 
 		putEntry("Entitys/");	
 
@@ -256,7 +247,7 @@ public class ExportTask extends BaseTask
 
 				writeBytes(out);
 
-				progress.updateProgress(progress.getProgress() + precentPerFile);
+				progress.setProgress(progress.getProgress() + precentPerFile);
 
 			}
 
@@ -274,7 +265,7 @@ public class ExportTask extends BaseTask
 
 				writeBytes(out);
 
-				progress.updateProgress(progress.getProgress() + precentPerFile);
+				progress.setProgress(progress.getProgress() + precentPerFile);
 
 			}
 		}
@@ -283,7 +274,7 @@ public class ExportTask extends BaseTask
 	public void addEntityData()
 	{
 		progress.setTask("Adding entity data");
-		progress.updateProgress(0);
+		progress.setProgress(0);
 
 		File fil = new File(workspace, "Entitys/Data.call");
 
@@ -297,13 +288,13 @@ public class ExportTask extends BaseTask
 
 		writeBytes(bytes);
 
-		progress.updateProgress(100);
+		progress.setProgress(100);
 	}
 
 	public void addVars()
 	{
 		progress.setTask("Adding Variables");
-		progress.updateProgress(0);
+		progress.setProgress(0);
 
 		File vars = new File(workspace, "Data/Vars.call");
 
@@ -316,13 +307,13 @@ public class ExportTask extends BaseTask
 		putEntry("Data/Vars.call");
 		writeBytes(bytes);
 
-		progress.updateProgress(100);
+		progress.setProgress(100);
 	}
 
 	public void clean()
 	{
 		progress.setTask("Cleaning bin");
-		progress.updateProgress(0);
+		progress.setProgress(0);
 
 		File f = new File(workspace, "bin/code/game");
 
@@ -333,11 +324,11 @@ public class ExportTask extends BaseTask
 			for(File ff : f.listFiles())
 			{
 				ff.delete();
-				progress.updateProgress(progress.getProgress() + percentPerFile);
+				progress.setProgress(progress.getProgress() + percentPerFile);
 			}
 		}
 
-		progress.updateProgress(100);
+		progress.setProgress(100);
 	}
 
 

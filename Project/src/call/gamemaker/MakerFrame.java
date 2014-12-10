@@ -3,12 +3,10 @@ package call.gamemaker;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -25,13 +23,10 @@ import call.file.layout.Element;
 import call.file.layout.Value;
 import call.file.writers.BasicWriter;
 import call.game.entitys.BasicEntity;
-import call.game.image.AnimatedSprite;
-import call.game.image.Animation;
-import call.game.image.Image;
 import call.game.image.Sprite;
 import call.game.main.Unknown;
-import call.game.utils.AnimationIO;
 import call.gamemaker.tasks.ExportTask;
+import call.gamemaker.tasks.OpenTask;
 import call.gamemaker.ui.DisplayComponent;
 import call.gamemaker.ui.EntityAddMenu;
 import call.gamemaker.ui.KeyBindEditMenu;
@@ -44,20 +39,20 @@ public class MakerFrame
 	public JFrame frame;
 	public DisplayComponent testDispaly;
 
-	private JMenu file;
+	public JMenu file;
 
-	private JMenuItem ne;
-	private JMenuItem open;
-	private JMenuItem save;
-	private JMenuItem export;
-	private JMenuItem publish;
-	private JMenuItem exit;
+	public JMenuItem ne;
+	public JMenuItem open;
+	public JMenuItem save;
+	public JMenuItem export;
+	public JMenuItem publish;
+	public JMenuItem exit;
 
-	private JMenu add;
+	public JMenu add;
 
-	private JMenu view;
+	public JMenu view;
 
-	private JMenu engine;
+	public JMenu engine;
 
 	private JCheckBoxMenuItem prefabs;
 	private JCheckBoxMenuItem animation;
@@ -104,7 +99,7 @@ public class MakerFrame
 		file.add(ne);
 
 		open = new JMenuItem("Open");
-		open.addActionListener(e -> openGame());
+		open.addActionListener(e -> openProject());
 		file.add(open);
 
 		save = new JMenuItem("Save");
@@ -253,7 +248,7 @@ public class MakerFrame
 		int i = browse.showSaveDialog(frame);
 
 		if(i == JFileChooser.APPROVE_OPTION)
-			new ExportTask(browse.getSelectedFile(), testDispaly).export();
+			new ExportTask(browse.getSelectedFile(), testDispaly).excecute();
 	}
 
 	public void save()
@@ -339,7 +334,7 @@ public class MakerFrame
 
 	public void newProject()
 	{
-		testDispaly.cleenup();
+		testDispaly.cleanup();
 
 		JFileChooser browse = new JFileChooser(new File("."));
 
@@ -490,120 +485,13 @@ public class MakerFrame
 			}catch(Exception e) {e.printStackTrace();}
 
 			ExportTask exp = new ExportTask(game, this.testDispaly);
-			exp.export();
+			exp.excecute();
 		}
 	}
 
-	public void openGame() // TODO: REFACTOR
+	public void openProject() // TODO: REFACTOR
 	{
-		testDispaly.cleenup();
-
-		JFileChooser browse = new JFileChooser(new File("."));
-
-		browse.setMultiSelectionEnabled(false);
-		browse.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-		int i = browse.showOpenDialog(frame);
-
-		if(i == JFileChooser.APPROVE_OPTION)
-		{
-			File dir = browse.getSelectedFile();
-
-			testDispaly.setWorkspace(dir);
-
-			// load sprites
-
-			File spriteData = new File(dir, "Sprites/Data.call");
-
-			CFile cf = new CFile(spriteData);
-
-			for(Element e : cf.getElements())
-			{
-				if(e.getName().equals("Sprite"))
-				{
-					int x = e.getValue("X").getInt(0);
-					int y = e.getValue("Y").getInt(0);
-
-					String imageS = e.getValue("Image").getValue();
-					String name = e.getValue("Name").getValue();
-
-					BufferedImage image = null;
-
-					try
-					{
-						image = ImageIO.read(new File(dir, "Sprites/" + imageS));
-					}catch(Exception ee) {}
-
-					Image img = new Image(image);
-
-					boolean prefab = e.getValue("Prefab").getBoolean(false);
-
-					Sprite s = new Sprite(x, y, img);
-
-					SpriteWrapper sw = new SpriteWrapper(s, prefab, imageS, name);
-
-					testDispaly.addSprite(sw);
-				}
-			}
-
-			File entityData = new File(dir, "Entitys/Data.call");
-			cf = new CFile(entityData);
-
-			for(Element e : cf.getElements())
-			{
-				if(e.getName().equals("Entity"))
-				{
-					int x = e.getValue("X").getInt(0);
-					int y = e.getValue("Y").getInt(0);
-					boolean animation = e.getValue("Animation").getBoolean(false);
-					int id = e.getValue("ID").getInt(0);
-
-					String imageS = e.getValue("Image").getValue();
-					String name = e.getValue("Name").getValue();
-
-					String tag = e.getValue("Tag").getValue();
-
-					Sprite s = null;
-
-					if(!animation)
-					{
-						try
-						{
-							BufferedImage image = null;
-
-							image = ImageIO.read(new File(dir, "Entitys/" + imageS));
-
-							Image img = new Image(image);
-
-							s = new Sprite(x, y, img);
-
-						}catch(Exception ee) {ee.printStackTrace();}
-					}
-					else
-					{
-						Animation ani = AnimationIO.loadAnimation(new File(dir, "Entitys/" + imageS));
-
-						s = new AnimatedSprite(x, y, ani);
-					}
-
-					boolean prefab = e.getValue("Prefab").getBoolean(false);
-
-					EntityWrapper sw = new EntityWrapper(new BasicEntity(s, id), prefab, imageS, name, tag, id, s instanceof AnimatedSprite);
-
-					testDispaly.addEntity(sw);
-				}
-			}
-
-			// add scripts to text table
-
-
-			export.setEnabled(true);
-			publish.setEnabled(true);
-
-			add.setEnabled(true);
-
-			engine.setEnabled(true);
-		}
+		new OpenTask(testDispaly, this).excecute();
 	}
 	
 	

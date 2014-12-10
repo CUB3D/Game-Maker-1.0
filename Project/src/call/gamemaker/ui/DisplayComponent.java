@@ -77,8 +77,10 @@ public class DisplayComponent extends Component
 
 		}
 
-		for(EntityWrapper sw : entitys)
+		for(int i = 0; i < entitys.size(); i++)
 		{
+			EntityWrapper sw = entitys.get(i);
+			
 			BasicEntity s = sw.getEntity();
 
 
@@ -199,7 +201,7 @@ public class DisplayComponent extends Component
 		this.viewWireframe = selected;
 	}
 	
-	public void cleenup()
+	public void cleanup()
 	{
 		this.entitys.clear();
 		this.sprites.clear();

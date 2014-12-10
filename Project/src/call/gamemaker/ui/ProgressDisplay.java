@@ -9,6 +9,8 @@ public class ProgressDisplay
 	private JFrame frame;
 	private JProgressBar progress;
 	private JLabel task;
+	
+	private double percent;
 
 	public ProgressDisplay()
 	{
@@ -39,11 +41,30 @@ public class ProgressDisplay
 		this.task.setText("Task: " + s);
 	}
 
-	public void updateProgress(int i)
+	public void setProgress(double i)
 	{
-		this.progress.setValue(i);
+		percent = i;
+		
+		update();
+	}
+	
+	public void updateProgress(double i)
+	{
+		percent += i;
+		
+		update();
+	}
+	
+	private void update()
+	{
+		this.progress.setValue((int) percent);
 	}
 
+	public double getProgressExact()
+	{
+		return percent;
+	}
+	
 	public int getProgress()
 	{
 		return progress.getValue();
