@@ -41,9 +41,9 @@ public class SpriteControlListener implements MouseListener, ActionListener
 				return;
 			}
 
-			for(int i = 0; i < frame.testDispaly.getSprites().size(); i++)
+			for(int i = 0; i < frame.testDisplay.getSprites().size(); i++)
 			{
-				SpriteWrapper sw = frame.testDispaly.getSprites().get(i);
+				SpriteWrapper sw = frame.testDisplay.getSprites().get(i);
 
 				Sprite s = sw.getSprite();
 
@@ -72,9 +72,9 @@ public class SpriteControlListener implements MouseListener, ActionListener
 				return;
 			}
 
-			for(int i = 0; i < frame.testDispaly.getSprites().size(); i++)
+			for(int i = 0; i < frame.testDisplay.getSprites().size(); i++)
 			{
-				SpriteWrapper sw = frame.testDispaly.getSprites().get(i);
+				SpriteWrapper sw = frame.testDisplay.getSprites().get(i);
 
 				Sprite s = sw.getSprite();
 
@@ -104,7 +104,7 @@ public class SpriteControlListener implements MouseListener, ActionListener
 				remove.addActionListener(this);
 				popup.add(remove);
 
-				popup.show(frame.testDispaly, x, y);
+				popup.show(frame.testDisplay, x, y);
 			}
 		}
 	}
@@ -128,7 +128,7 @@ public class SpriteControlListener implements MouseListener, ActionListener
 		{
 			if(command.equals("rem"))
 			{
-				DisplayComponent dc = frame.testDispaly;
+				DisplayComponent dc = frame.testDisplay;
 
 				dc.getSprites().remove(selectedIndex);
 			}

@@ -29,6 +29,8 @@ public class OpenTask extends BaseTask
 	public OpenTask(DisplayComponent component, MakerFrame frame)
 	{
 		super(component);
+		
+		chooseDir();
 
 		this.frame = frame;
 	}
@@ -38,8 +40,6 @@ public class OpenTask extends BaseTask
 	{
 		List<Task> tasks = new ArrayList<Task>();
 
-
-		tasks.add(bt -> chooseDir());
 		tasks.add(bt -> setupWorkspace());
 		tasks.add(bt -> loadSprites());
 		tasks.add(bt -> loadEntitys());

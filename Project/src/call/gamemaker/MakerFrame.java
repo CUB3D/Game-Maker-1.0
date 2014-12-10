@@ -22,11 +22,10 @@ import call.file.api.FileAPI;
 import call.file.layout.Element;
 import call.file.layout.Value;
 import call.file.writers.BasicWriter;
-import call.game.entitys.BasicEntity;
-import call.game.image.Sprite;
 import call.game.main.Unknown;
 import call.gamemaker.tasks.ExportTask;
 import call.gamemaker.tasks.OpenTask;
+import call.gamemaker.tasks.SaveTask;
 import call.gamemaker.ui.DisplayComponent;
 import call.gamemaker.ui.EntityAddMenu;
 import call.gamemaker.ui.KeyBindEditMenu;
@@ -37,7 +36,7 @@ import call.gamemaker.ui.VarAddMenu;
 public class MakerFrame
 {
 	public JFrame frame;
-	public DisplayComponent testDispaly;
+	public DisplayComponent testDisplay;
 
 	public JMenu file;
 
@@ -99,17 +98,17 @@ public class MakerFrame
 		file.add(ne);
 
 		open = new JMenuItem("Open");
-		open.addActionListener(e -> openProject());
+		open.addActionListener(e -> new OpenTask(testDisplay, this).excecute());
 		file.add(open);
 
 		save = new JMenuItem("Save");
-		save.addActionListener(e -> save());
+		save.addActionListener(e -> new SaveTask(testDisplay).excecute());
 		file.add(save);
 
 		file.addSeparator();
 
 		export = new JMenuItem("Export");
-		export.addActionListener(e -> export());
+		export.addActionListener(e -> new ExportTask(testDisplay).excecute());
 		export.setEnabled(false);
 		file.add(export);
 
@@ -130,7 +129,7 @@ public class MakerFrame
 		bar.add(add);
 
 		JMenuItem sprite = new JMenuItem("Sprite");
-		sprite.addActionListener(e -> new SpriteAddMenu(testDispaly));
+		sprite.addActionListener(e -> new SpriteAddMenu(testDisplay));
 		add.add(sprite);
 
 		JMenuItem code = new JMenuItem("Script");
@@ -138,11 +137,11 @@ public class MakerFrame
 		add.add(code);
 
 		JMenuItem entity = new JMenuItem("Entity");
-		entity.addActionListener(e -> new EntityAddMenu(this.testDispaly));
+		entity.addActionListener(e -> new EntityAddMenu(this.testDisplay));
 		add.add(entity);
 
 		JMenuItem varible = new JMenuItem("Global var");
-		varible.addActionListener(e -> new VarAddMenu(this.testDispaly));
+		varible.addActionListener(e -> new VarAddMenu(this.testDisplay));
 		add.add(varible);
 
 
@@ -172,9 +171,9 @@ public class MakerFrame
 
 		frame.setJMenuBar(bar);
 
-		testDispaly = new DisplayComponent(this);
+		testDisplay = new DisplayComponent(this);
 
-		testDispaly.setBounds(0, 0, 800, frame.getHeight());
+		testDisplay.setBounds(0, 0, 800, frame.getHeight());
 
 		table = new TextTable();
 
@@ -183,7 +182,7 @@ public class MakerFrame
 		frame.add(table);
 
 
-		frame.add(testDispaly);
+		frame.add(testDisplay);
 
 		frame.setVisible(true);
 
@@ -197,9 +196,9 @@ public class MakerFrame
 	
 	public void update()
 	{
-		testDispaly.setViewPrefabs(prefabs.isSelected());
-		testDispaly.setViewAnimations(animation.isSelected());
-		testDispaly.setViewWireframe(wireframe.isSelected());
+		testDisplay.setViewPrefabs(prefabs.isSelected());
+		testDisplay.setViewAnimations(animation.isSelected());
+		testDisplay.setViewWireframe(wireframe.isSelected());
 	}
 	
 	public void addcode()
@@ -208,7 +207,7 @@ public class MakerFrame
 
 		if(name != null && !name.isEmpty())
 		{
-			File script = new File(testDispaly.getWorkspace(), "Src/code/game/" + name + ".java");
+			File script = new File(testDisplay.getWorkspace(), "Src/code/game/" + name + ".java");
 
 			try
 			{
@@ -238,103 +237,9 @@ public class MakerFrame
 		}
 	}
 
-	public void export()
-	{
-		JFileChooser browse = new JFileChooser(testDispaly.getWorkspace().getParentFile());
-
-		browse.setMultiSelectionEnabled(false);
-		browse.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-		int i = browse.showSaveDialog(frame);
-
-		if(i == JFileChooser.APPROVE_OPTION)
-			new ExportTask(browse.getSelectedFile(), testDispaly).excecute();
-	}
-
-	public void save()
-	{
-		File sprites = new File(testDispaly.getWorkspace(), "Sprites");
-
-		File output = new File(sprites, "Data.call");
-
-		output.delete();
-
-		try
-		{
-			output.createNewFile();
-		}catch(Exception e) {e.printStackTrace();}
-
-		CFile cf = new CFile(output);
-
-		Element noop = new Element("NOOP");
-
-		noop.addValue(new Value("NOOP", "1"));
-
-		cf.addElement(noop);
-
-		cf.load();
-
-		for(SpriteWrapper sw : testDispaly.getSprites())
-		{
-			Sprite s = sw.getSprite();
-
-			Element e = new Element("Sprite");
-
-			e.addValue(new Value("X", "" + s.getX()));
-			e.addValue(new Value("Y", "" + s.getY()));
-			e.addValue(new Value("Image", sw.getImage()));
-			e.addValue(new Value("Name", sw.getName()));
-			e.addValue(new Value("Prefab", "" + sw.isPrefab()));
-
-			cf.addElement(e);
-		}
-
-		cf.save();
-
-
-
-
-		File entitys = new File(testDispaly.getWorkspace(), "Entitys");
-
-		output = new File(entitys, "Data.call");
-
-		output.delete();
-
-		try
-		{
-			output.createNewFile();
-		}catch(Exception e) {e.printStackTrace();}
-
-		cf = new CFile(output);
-
-		cf.addElement(noop);
-
-		cf.load();
-
-		for(EntityWrapper sw : testDispaly.getEntitys())
-		{
-			BasicEntity s = sw.getEntity();
-
-			Element e = new Element("Entity");
-
-			e.addValue(new Value("X", "" + s.getX()));
-			e.addValue(new Value("Y", "" + s.getY()));
-			e.addValue(new Value("Image", sw.getImage()));
-			e.addValue(new Value("Name", sw.getName()));
-			e.addValue(new Value("Prefab", "" + sw.isPrefab()));
-			e.addValue(new Value("Animation", "" + sw.isAnimated()));
-			e.addValue(new Value("ID", "" + sw.getID()));
-			e.addValue(new Value("Tag", sw.getTag()));
-
-			cf.addElement(e);
-		}
-
-		cf.save();
-	}
-
 	public void newProject()
 	{
-		testDispaly.cleanup();
+		testDisplay.cleanup();
 
 		JFileChooser browse = new JFileChooser(new File("."));
 
@@ -409,7 +314,7 @@ public class MakerFrame
 
 			data_.save();
 
-			testDispaly.setWorkspace(dir);
+			testDisplay.setWorkspace(dir);
 
 			export.setEnabled(true);
 			publish.setEnabled(true);
@@ -484,16 +389,10 @@ public class MakerFrame
 				game.createNewFile();
 			}catch(Exception e) {e.printStackTrace();}
 
-			ExportTask exp = new ExportTask(game, this.testDispaly);
+			ExportTask exp = new ExportTask(game, this.testDisplay);
 			exp.excecute();
 		}
 	}
-
-	public void openProject() // TODO: REFACTOR
-	{
-		new OpenTask(testDispaly, this).excecute();
-	}
-	
 	
 	public static void main(String[] args)
 	{

@@ -34,6 +34,8 @@ public class ProgressDisplay
 		this.task = new JLabel("Task: None");
 		this.task.setBounds(10, 50 + 10, WIDTH - 10, 30);
 		this.frame.add(task);
+		
+		setTask("");
 	}
 
 	public void setTask(String s)

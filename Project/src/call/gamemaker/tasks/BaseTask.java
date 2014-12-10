@@ -23,12 +23,12 @@ public class BaseTask
 		this.workspace = component.getWorkspace();
 
 		progress = new ProgressDisplay();
-		progress.setTask("");
-		progress.display();
 	}
 
 	public void excecute()
 	{
+		progress.display();
+		
 		BaseTaskRunnable btr = new BaseTaskRunnable(this);
 		
 		new Thread(btr).start();

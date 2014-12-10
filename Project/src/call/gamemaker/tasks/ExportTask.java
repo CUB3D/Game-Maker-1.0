@@ -11,6 +11,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 
 import call.file.api.FileAPI;
 import call.game.image.Animation;
@@ -23,14 +24,24 @@ public class ExportTask extends BaseTask
 {
 	private ZipOutputStream output;
 
-	public ExportTask(File output, DisplayComponent display)
+	public ExportTask(DisplayComponent display)
+	{
+		this(null, display);
+	}
+	
+	public ExportTask(File f, DisplayComponent display)
 	{
 		super(display);
 
-		try
+		if(f == null)
+			getDir();
+		else
 		{
-			this.output = new ZipOutputStream(new FileOutputStream(output));
-		}catch(Exception e) {e.printStackTrace();}
+			try
+			{
+				this.output = new ZipOutputStream(new FileOutputStream(f));
+			}catch(Exception e) {e.printStackTrace();}
+		}
 	}
 
 	@Override
@@ -51,7 +62,25 @@ public class ExportTask extends BaseTask
 
 		return tasks;
 	}
-	
+
+	public void getDir()
+	{
+		JFileChooser browse = new JFileChooser(display.getWorkspace().getParentFile());
+
+		browse.setMultiSelectionEnabled(false);
+		browse.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+		int i = browse.showSaveDialog(display);
+
+		if(i == JFileChooser.APPROVE_OPTION)
+		{
+			try
+			{
+				this.output = new ZipOutputStream(new FileOutputStream(browse.getSelectedFile()));
+			}catch(Exception e) {e.printStackTrace();}
+		}
+	}
+
 	public void done()
 	{
 		try

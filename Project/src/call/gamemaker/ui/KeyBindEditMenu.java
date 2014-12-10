@@ -24,7 +24,7 @@ public class KeyBindEditMenu implements ActionListener
 	
 	public KeyBindEditMenu(MakerFrame frame)
 	{
-		this.disp = frame.testDispaly;
+		this.disp = frame.testDisplay;
 		
 		int WIDTH = 250;
 		int HEIGHT = 350;

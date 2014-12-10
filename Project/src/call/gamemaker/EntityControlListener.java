@@ -42,9 +42,9 @@ public class EntityControlListener implements MouseListener, ActionListener
 				return;
 			}
 
-			for(int i = 0; i < frame.testDispaly.getEntitys().size(); i++)
+			for(int i = 0; i < frame.testDisplay.getEntitys().size(); i++)
 			{
-				EntityWrapper sw = frame.testDispaly.getEntitys().get(i);
+				EntityWrapper sw = frame.testDisplay.getEntitys().get(i);
 
 				BasicEntity s = sw.getEntity();
 
@@ -73,9 +73,9 @@ public class EntityControlListener implements MouseListener, ActionListener
 				return;
 			}
 
-			for(int i = 0; i < frame.testDispaly.getEntitys().size(); i++)
+			for(int i = 0; i < frame.testDisplay.getEntitys().size(); i++)
 			{
-				EntityWrapper sw = frame.testDispaly.getEntitys().get(i);
+				EntityWrapper sw = frame.testDisplay.getEntitys().get(i);
 
 				BasicEntity s = sw.getEntity();
 
@@ -105,7 +105,7 @@ public class EntityControlListener implements MouseListener, ActionListener
 				remove.addActionListener(this);
 				popup.add(remove);
 
-				popup.show(frame.testDispaly, x, y);
+				popup.show(frame.testDisplay, x, y);
 			}
 		}
 	}
@@ -131,14 +131,14 @@ public class EntityControlListener implements MouseListener, ActionListener
 		{
 			if(command.equals("rem"))
 			{
-				DisplayComponent dc = frame.testDispaly;
+				DisplayComponent dc = frame.testDisplay;
 
 				dc.getEntitys().remove(selectedIndex);
 			}
 			
 			if(command.equals("edit"))
 			{
-				new EntityEditMenu(frame.testDispaly, selected);
+				new EntityEditMenu(frame.testDisplay, selected);
 			}
 		}
 	}
