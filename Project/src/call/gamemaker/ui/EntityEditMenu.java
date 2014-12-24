@@ -35,6 +35,7 @@ public class EntityEditMenu implements ActionListener
 	private JTextField tag;
 	private JCheckBox prefab;
 	private JButton add;
+	private JSpinner health;
 
 	private File imageFile;
 
@@ -47,7 +48,7 @@ public class EntityEditMenu implements ActionListener
 		this.entity = ew;
 
 		int WIDTH = 310;
-		int HEIGHT = 305;
+		int HEIGHT = 365;
 
 		this.frame = new JFrame();
 		this.frame.setSize(WIDTH, HEIGHT);
@@ -133,8 +134,17 @@ public class EntityEditMenu implements ActionListener
 		this.prefab.setSelected(entity.isPrefab());
 		this.frame.add(prefab);
 
+		JLabel health_ = new JLabel("Health: ");
+		health_.setBounds(x_, 255, width_, height);
+		this.frame.add(health_);
+		
+		this.health = new JSpinner();
+		this.health.setBounds(x, 255, width, height);
+		this.health.setValue(entity.getHealth());
+		this.frame.add(health);
+		
 		this.add = new JButton("Save");
-		this.add.setBounds(x, 255, width, height);
+		this.add.setBounds(x, 290, width, height);
 		this.add.setActionCommand("add");
 		this.add.addActionListener(this);
 		this.frame.add(add);
@@ -195,6 +205,8 @@ public class EntityEditMenu implements ActionListener
 			entity.setTag(tag.getText());
 			
 			entity.setPrefab(prefab.isSelected());
+			
+			entity.setHealth(Integer.parseInt(health.getValue().toString()));
 			
 			if(!image.getText().equals(entity.getImage()))
 			{

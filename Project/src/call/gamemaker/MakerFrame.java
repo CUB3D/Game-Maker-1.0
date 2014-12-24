@@ -4,7 +4,6 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -25,6 +24,7 @@ import call.file.writers.BasicWriter;
 import call.game.main.Unknown;
 import call.gamemaker.tasks.ExportTask;
 import call.gamemaker.tasks.OpenTask;
+import call.gamemaker.tasks.PublishTask;
 import call.gamemaker.tasks.SaveTask;
 import call.gamemaker.ui.DisplayComponent;
 import call.gamemaker.ui.EntityAddMenu;
@@ -35,7 +35,7 @@ import call.gamemaker.ui.VarAddMenu;
 
 public class MakerFrame
 {
-	public JFrame frame;
+	public static JFrame frame;
 	public DisplayComponent testDisplay;
 
 	public JMenu file;
@@ -113,7 +113,7 @@ public class MakerFrame
 		file.add(export);
 
 		publish = new JMenuItem("Publish");
-		publish.addActionListener(e -> publish());
+		publish.addActionListener(e -> new PublishTask(testDisplay).excecute());
 		publish.setEnabled(false);
 		file.add(publish);
 
@@ -322,75 +322,6 @@ public class MakerFrame
 			add.setEnabled(true);
 
 			engine.setEnabled(true);
-		}
-	}
-
-	public void publish()
-	{
-		JFileChooser browse = new JFileChooser(new File("."));
-
-		browse.setMultiSelectionEnabled(false);
-		browse.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-		int i = browse.showSaveDialog(frame);
-
-		File out = browse.getSelectedFile();
-
-		if(i == JFileChooser.APPROVE_OPTION)
-		{
-			File exec = new File("libs/GameMaker.jar");
-
-			FileAPI exec_ = new FileAPI(exec);
-
-			byte[] bytes = exec_.getBytes();
-
-			File execOut = new File(out, "GameRunner.jar");
-
-			try
-			{
-				execOut.createNewFile();
-
-				FileOutputStream execfos = new FileOutputStream(execOut);
-				execfos.write(bytes);
-				execfos.flush();
-				execfos.close();
-			}catch(Exception e) {e.printStackTrace();}
-
-			File info = new File(out, "GameInfo.call");
-
-			try
-			{
-				info.createNewFile();
-			}catch(Exception e) {e.printStackTrace();}
-
-			CFile cf = new CFile(info);
-
-			Element gameinfo = new Element("GameInfo");
-
-			gameinfo.addValue(new Value("TickSpeed", "120"));
-
-			cf.addElement(gameinfo);
-
-			Element window = new Element("Window");
-
-			window.addValue(new Value("Width", "512"));
-			window.addValue(new Value("Height", "512"));
-			window.addValue(new Value("Title", "TEST"));
-			window.addValue(new Value("Resizable", "false"));
-
-			cf.addElement(window);
-
-			cf.save();
-
-			File game = new File(out, "test.game");
-
-			try
-			{
-				game.createNewFile();
-			}catch(Exception e) {e.printStackTrace();}
-
-			ExportTask exp = new ExportTask(game, this.testDisplay);
-			exp.excecute();
 		}
 	}
 	

@@ -12,12 +12,12 @@ public class ProgressDisplay
 	
 	private double percent;
 
-	public ProgressDisplay()
+	public ProgressDisplay(String title)
 	{
 		int WIDTH = 500;
 		int HEIGHT = 125;
 
-		this.frame = new JFrame("Exporting");
+		this.frame = new JFrame(title);
 		this.frame.setSize(WIDTH, HEIGHT);
 		this.frame.setResizable(false);
 		this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

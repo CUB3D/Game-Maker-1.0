@@ -31,7 +31,7 @@ public class ExportTask extends BaseTask
 	
 	public ExportTask(File f, DisplayComponent display)
 	{
-		super(display);
+		super(display, "Exporting");
 
 		if(f == null)
 			getDir();

@@ -15,23 +15,29 @@ public class BaseTask
 	protected DisplayComponent display;
 
 	protected int curTask = 0;
+	
+	protected BaseTaskRunnable runnable;
+	
+	protected Thread taskThread;
 
-	public BaseTask(DisplayComponent component)
+	public BaseTask(DisplayComponent component, String title)
 	{
 		this.display = component;
 		
 		this.workspace = component.getWorkspace();
 
-		progress = new ProgressDisplay();
+		this.progress = new ProgressDisplay(title);
+		
+		runnable = new BaseTaskRunnable(this);
+		
+		taskThread = new Thread(runnable);
 	}
 
 	public void excecute()
 	{
 		progress.display();
 		
-		BaseTaskRunnable btr = new BaseTaskRunnable(this);
-		
-		new Thread(btr).start();
+		taskThread.start();
 	}
 	
 	public List<Task> getTasks()

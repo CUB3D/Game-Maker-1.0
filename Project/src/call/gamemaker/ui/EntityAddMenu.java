@@ -22,7 +22,6 @@ import call.file.api.FileAPI;
 import call.file.layout.Element;
 import call.file.layout.Value;
 import call.file.writers.BasicWriter;
-import call.game.entitys.BasicEntity;
 import call.game.image.AnimatedSprite;
 import call.game.image.Animation;
 import call.game.image.Image;
@@ -41,9 +40,10 @@ public class EntityAddMenu implements ActionListener
 	private JButton browse;
 	private JTextField name;
 	private JTextField tag;
-	private JSpinner ID;
+	private JTextField ID;
 	private JCheckBox prefab;
 	private JButton add;
+	private JSpinner health;
 
 	private File imageFile;
 
@@ -52,7 +52,7 @@ public class EntityAddMenu implements ActionListener
 	public EntityAddMenu(DisplayComponent component)
 	{
 		int WIDTH = 310;
-		int HEIGHT = 360;
+		int HEIGHT = 400;
 
 		this.frame = new JFrame();
 		this.frame.setSize(WIDTH, HEIGHT);
@@ -127,7 +127,7 @@ public class EntityAddMenu implements ActionListener
 		ID_.setBounds(x_, 220, width_, height);
 		this.frame.add(ID_);
 
-		this.ID = new JSpinner();
+		this.ID = new JTextField();
 		ID.setBounds(x, 220, width, height);
 		this.frame.add(ID);
 
@@ -138,9 +138,17 @@ public class EntityAddMenu implements ActionListener
 		this.prefab = new JCheckBox();
 		this.prefab.setBounds(x, 255, width, height);
 		this.frame.add(prefab);
+		
+		JLabel health_ = new JLabel("Health: ");
+		health_.setBounds(x_, 290, width_, height);
+		this.frame.add(health_);
+		
+		this.health = new JSpinner();
+		this.health.setBounds(x, 290, width, height);
+		this.frame.add(health);
 
 		this.add = new JButton("Add");
-		this.add.setBounds(x, 290, width, height);
+		this.add.setBounds(x, 325, width, height);
 		this.add.setActionCommand("add");
 		this.add.addActionListener(this);
 		this.frame.add(add);
@@ -192,7 +200,7 @@ public class EntityAddMenu implements ActionListener
 		{
 			int xx = Integer.parseInt(X.getValue().toString());
 			int yy = Integer.parseInt(Y.getValue().toString());
-			int id = Integer.parseInt(ID.getValue().toString());
+			int helt = Integer.parseInt(health.getValue().toString());
 
 			//copy image to sprites dir and update sprite data
 			File entitys = new File(component.getWorkspace(), "Entitys");
@@ -234,14 +242,15 @@ public class EntityAddMenu implements ActionListener
 				e.addValue(new Value("Name", name.getText()));
 				e.addValue(new Value("Prefab", "" + prefab.isSelected()));
 				e.addValue(new Value("Animation", "" + animated.isSelected()));
-				e.addValue(new Value("ID", "" + id));
+				e.addValue(new Value("ID", ID.getText()));
 				e.addValue(new Value("Tag", tag.getText()));
+				e.addValue(new Value("Health", "" + helt));
 
 				cf.addElement(e);
 
 				cf.save();
 
-				EntityWrapper sw = new EntityWrapper(new BasicEntity(s, id), prefab.isSelected(), imageFile.getName(), name.getText(), tag.getText(), id, animated.isSelected());
+				EntityWrapper sw = new EntityWrapper(s, prefab.isSelected(), imageFile.getName(), name.getText(), tag.getText(), ID.getText(), animated.isSelected(), helt);
 
 				component.addEntity(sw);
 			}
@@ -286,14 +295,15 @@ public class EntityAddMenu implements ActionListener
 				e.addValue(new Value("Animation", "" + animated.isSelected()));
 				e.addValue(new Value("Name", name.getText()));
 				e.addValue(new Value("Prefab", "" + prefab.isSelected()));
-				e.addValue(new Value("ID", "" + id));
+				e.addValue(new Value("ID", "" + ID.getText()));
 				e.addValue(new Value("Tag", tag.getText()));
+				e.addValue(new Value("Health", "" + helt));
 
 				cf.addElement(e);
 
 				cf.save();
 
-				EntityWrapper sw = new EntityWrapper(new BasicEntity(s, id), prefab.isSelected(), imageFile.getName(), name.getText(), tag.getText(), id, animated.isSelected());
+				EntityWrapper sw = new EntityWrapper(s, prefab.isSelected(), imageFile.getName(), name.getText(), tag.getText(), ID.getText(), animated.isSelected(), helt);
 
 				component.addEntity(sw);
 			}
@@ -320,7 +330,7 @@ public class EntityAddMenu implements ActionListener
 			writer.writeln("public class " + name.getText());
 			writer.writeln("{");
 			writer.writeln("");
-			writer.writeln("	public BasicEntity entity;");
+			writer.writeln("	public BaseEntity entity;");
 			writer.writeln("");
 			writer.writeln("	public " + name.getText() + "()");
 			writer.writeln("	{");

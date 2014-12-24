@@ -10,7 +10,6 @@ import javax.swing.JFileChooser;
 
 import call.file.api.CFile;
 import call.file.layout.Element;
-import call.game.entitys.BasicEntity;
 import call.game.image.AnimatedSprite;
 import call.game.image.Image;
 import call.game.image.Sprite;
@@ -28,7 +27,7 @@ public class OpenTask extends BaseTask
 
 	public OpenTask(DisplayComponent component, MakerFrame frame)
 	{
-		super(component);
+		super(component, "Opening");
 		
 		chooseDir();
 
@@ -133,14 +132,16 @@ public class OpenTask extends BaseTask
 				{
 					int x = e.getValue("X").getInt(0);
 					int y = e.getValue("Y").getInt(0);
-					int id = e.getValue("ID").getInt(0);
+					String id = e.getValue("ID").getValue();
 
-					boolean animation = e.getValue("Animation").getBoolean(false);
-					boolean prefab = e.getValue("Prefab").getBoolean(false);
+					boolean animation = e.getValue("Animation").getBoolean();
+					boolean prefab = e.getValue("Prefab").getBoolean();
 
 					String imageName = e.getValue("Image").getValue();
 					String name = e.getValue("Name").getValue();
 					String tag = e.getValue("Tag").getValue();
+					
+					int health = e.getValue("Health").getInt();
 
 					File spriteLoc = new File(dir, "Entitys/" + imageName);
 
@@ -159,7 +160,7 @@ public class OpenTask extends BaseTask
 					else
 						s = new AnimatedSprite(x, y, AnimationIO.loadAnimation(spriteLoc));
 
-					EntityWrapper sw = new EntityWrapper(new BasicEntity(s, id), prefab, imageName, name, tag, id, animation);
+					EntityWrapper sw = new EntityWrapper(s, prefab, imageName, name, tag, id, animation, health);
 
 					display.addEntity(sw);
 

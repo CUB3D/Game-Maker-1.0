@@ -17,7 +17,7 @@ public class SaveTask extends BaseTask
 {
 	public SaveTask(DisplayComponent component)
 	{
-		super(component);
+		super(component, "Saving");
 	}
 	
 	@Override
@@ -101,8 +101,9 @@ public class SaveTask extends BaseTask
 			e.addValue(new Value("Name", sw.getName()));
 			e.addValue(new Value("Prefab", "" + sw.isPrefab()));
 			e.addValue(new Value("Animation", "" + sw.isAnimated()));
-			e.addValue(new Value("ID", "" + sw.getID()));
+			e.addValue(new Value("ID", sw.getID()));
 			e.addValue(new Value("Tag", sw.getTag()));
+			e.addValue(new Value("Health", "" + sw.getHealth()));
 
 			cf.addElement(e);
 		}
